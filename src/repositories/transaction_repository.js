@@ -1,32 +1,33 @@
 import pool from '../config/db.js';
 
-const create = async ({ description, amount, categoryId, uid }) => {
+const create = async ({ description, amount, categoryId, date, uid }) => {
     const result = await pool.query(
         `
       INSERT INTO transactions (
         description,
         amount,
         category_id,
-        created_by
+        created_by,
+        date
       )
-      VALUES ($1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `,
-        [description, amount, categoryId, uid]
+        [description, amount, categoryId, uid, date]
     );
 
     return result.rows[0];
 };
 
-const update = async ({ id, description, amount, categoryId }) => {
+const update = async ({ id, description, amount, categoryId, date }) => {
     const result = await pool.query(
         `
         UPDATE transactions 
-        SET description = $1, amount = $2, category_id = $3
-        WHERE id = $4
+        SET description = $1, amount = $2, category_id = $3, date = $4
+        WHERE id = $5
         RETURNING *
         `,
-        [description, amount, categoryId, id]
+        [description, amount, categoryId, date, id]
     );
     return result.rows[0];
 

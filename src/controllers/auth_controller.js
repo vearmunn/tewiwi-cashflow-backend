@@ -30,7 +30,12 @@ async function register(req, res) {
         return res.status(201).json({
             status: 'success',
             message: 'Registration successful',
-            session: data.session,
+            data: {
+                accessToken: data.session.access_token,
+                refreshToken: data.session.refresh_token,
+                expiresAt: data.session.expires_at,
+                user: data.user,
+            },
         });
     } catch (error) {
         console.error(error);
@@ -62,7 +67,12 @@ async function login(req, res) {
 
         return res.status(200).json({
             status: 'success',
-            session: data.session,
+            data: {
+                accessToken: data.session.access_token,
+                refreshToken: data.session.refresh_token,
+                expiresAt: data.session.expires_at,
+                user: data.user,
+            },
         });
     } catch (error) {
         console.error(error);

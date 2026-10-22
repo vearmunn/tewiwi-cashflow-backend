@@ -2,10 +2,10 @@ import * as transactionRepo from '../repositories/transaction_repository.js';
 
 const createTransaction = async (req, res, next) => {
     try {
-        const { description, amount, categoryId } = req.body;
+        const { description, amount, categoryId, date } = req.body;
 
         const transaction = await transactionRepo.create({
-            description, amount, categoryId, uid: req.user.id
+            description, amount, categoryId, date, uid: req.user.id
         });
 
         return res.status(201).json({
@@ -63,7 +63,7 @@ const deleteTransaction = async (req, res, next) => {
 
 const updateTransaction = async (req, res, next) => {
     try {
-        const { description, amount, categoryId } = req.body;
+        const { description, amount, categoryId, date } = req.body;
         const { transactionId } = req.params;
         const existingTransaction = await transactionRepo.findById(transactionId);
 
@@ -78,6 +78,7 @@ const updateTransaction = async (req, res, next) => {
             id: transactionId,
             description: description || existingTransaction.description,
             amount: amount || existingTransaction.amount,
+            date: date || existingTransaction.date,
             categoryId: categoryId || existingTransaction.category_id,
         });
 
