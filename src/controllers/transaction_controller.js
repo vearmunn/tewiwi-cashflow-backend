@@ -93,7 +93,7 @@ const updateTransaction = async (req, res, next) => {
     }
 };
 
-const getAllCategories = async (req, res, next) => {
+const getAllTransactions = async (req, res, next) => {
     try {
 
         const categories = await transactionRepo.findAll();
@@ -109,7 +109,7 @@ const getAllCategories = async (req, res, next) => {
 
 export {
     createTransaction,
-    getAllCategories,
+    getAllTransactions,
     getTransactionById,
     deleteTransaction,
     updateTransaction

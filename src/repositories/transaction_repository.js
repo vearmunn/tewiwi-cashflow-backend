@@ -61,7 +61,15 @@ const remove = async (id) => {
 
 const findAll = async () => {
     const result = await pool.query(
-        "SELECT * FROM transactions",
+        `
+         SELECT
+        t.*,
+        c.type AS category_type
+    FROM transactions AS t
+    INNER JOIN categories AS c
+        ON t.category_id = c.id
+    ORDER BY t.date DESC
+        `,
     );
 
     return result.rows;
