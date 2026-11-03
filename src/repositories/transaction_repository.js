@@ -59,18 +59,44 @@ const remove = async (id) => {
     return result.rows[0];
 };
 
-const findAll = async () => {
-    const result = await pool.query(
+const findAll = async (startDate, endDate, categoryId, type, search) => {
+    let query =
         `
-         SELECT
+        SELECT
         t.*,
         c.type AS category_type
     FROM transactions AS t
     INNER JOIN categories AS c
         ON t.category_id = c.id
-    ORDER BY t.date DESC
-        `,
-    );
+        `;
+    const values = []
+    if (startDate) {
+        values.push(startDate);
+        query += ` AND t.date >= $${values.length}::date`;
+    }
+
+    if (endDate) {
+        values.push(endDate);
+        query += ` AND t.date < ($${values.length}::date + INTERVAL '1 day')`;
+    }
+
+    if (categoryId) {
+        values.push(categoryId);
+        query += ` AND t.category_id = $${values.length}`;
+    }
+
+    if (type) {
+        values.push(type);
+        query += ` AND c.type = $${values.length}`;
+    }
+
+    if (search) {
+        values.push(`%${search}%`);
+        query += ` AND t.description ILIKE $${values.length}`;
+    }
+
+    query += ` ORDER BY t.date DESC`;
+    const result = await pool.query(query, values);
 
     return result.rows;
 };

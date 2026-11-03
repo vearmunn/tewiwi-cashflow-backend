@@ -95,8 +95,8 @@ const updateTransaction = async (req, res, next) => {
 
 const getAllTransactions = async (req, res, next) => {
     try {
-
-        const categories = await transactionRepo.findAll();
+        const { startDate, endDate, categoryId, type, search } = req.query;
+        const categories = await transactionRepo.findAll(startDate, endDate, categoryId, type, search);
 
         return res.status(200).json({
             status: 'success',
