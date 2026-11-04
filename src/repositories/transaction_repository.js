@@ -59,7 +59,7 @@ const remove = async (id) => {
     return result.rows[0];
 };
 
-const findAll = async (startDate, endDate, categoryId, type, search) => {
+const findAll = async (startDate, endDate, categoryId, type, search, limit) => {
     let query =
         `
         SELECT
@@ -96,6 +96,11 @@ const findAll = async (startDate, endDate, categoryId, type, search) => {
     }
 
     query += ` ORDER BY t.date DESC`;
+
+    if (limit) {
+        values.push(limit);
+        query += ` LIMIT $${values.length}`;
+    }
     const result = await pool.query(query, values);
 
     return result.rows;
