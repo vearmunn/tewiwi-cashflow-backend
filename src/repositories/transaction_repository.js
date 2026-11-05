@@ -63,21 +63,30 @@ const findAll = async (startDate, endDate, categoryId, type, search, limit) => {
     let query =
         `
         SELECT
-        t.*,
+        t.id,
+        t.description,
+        t.amount,
+        t.category_id,
+        t.created_by,
+        TO_CHAR(
+        t.date AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM-DD"T"HH24:MI:SS') || '+07:00' AS date,
         c.type AS category_type
     FROM transactions AS t
     INNER JOIN categories AS c
         ON t.category_id = c.id
+    WHERE 1=1
         `;
     const values = []
+
+
     if (startDate) {
         values.push(startDate);
-        query += ` AND t.date >= $${values.length}::date`;
+        query += ` AND t.date >= ($${values.length}::date::timestamp AT TIME ZONE 'Asia/Jakarta')`;
     }
 
     if (endDate) {
         values.push(endDate);
-        query += ` AND t.date < ($${values.length}::date + INTERVAL '1 day')`;
+        query += ` AND t.date < (($${values.length}::date + INTERVAL '1 day') AT TIME ZONE 'Asia/Jakarta')`;
     }
 
     if (categoryId) {
@@ -106,11 +115,49 @@ const findAll = async (startDate, endDate, categoryId, type, search, limit) => {
     return result.rows;
 };
 
+const fetchSummary = async (startDate, endDate) => {
+
+    let query = `SELECT
+        TO_CHAR(t.date AT TIME ZONE 'Asia/Jakarta','YYYY-MM-DD') AS date,
+        COALESCE(
+            SUM(CASE WHEN c.type = 'income' THEN t.amount ELSE 0 END),
+            0
+        ) AS income,
+        COALESCE(
+            SUM(CASE WHEN c.type = 'expense' THEN t.amount ELSE 0 END),
+            0
+        ) AS expense
+    FROM transactions AS t
+    INNER JOIN categories AS c
+        ON t.category_id = c.id
+    WHERE 1=1`;
+
+    const values = []
+    if (startDate) {
+        values.push(startDate);
+        query += ` AND t.date >= ($${values.length}::date::timestamp AT TIME ZONE 'Asia/Jakarta')`;
+    }
+
+    if (endDate) {
+        values.push(endDate);
+        query += ` AND t.date < (($${values.length}::date + INTERVAL '1 day') AT TIME ZONE 'Asia/Jakarta')`;
+    }
+
+
+    query += `  GROUP BY  TO_CHAR(t.date AT TIME ZONE 'Asia/Jakarta','YYYY-MM-DD')
+        ORDER BY  TO_CHAR(t.date AT TIME ZONE 'Asia/Jakarta','YYYY-MM-DD') ASC`;
+
+    const result = await pool.query(query, values);
+
+    return result.rows;
+}
+
 
 export {
     create,
     findAll,
     remove,
     findById,
-    update
+    update,
+    fetchSummary
 };

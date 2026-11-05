@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/', authenticate, transactionController.createTransaction);
 router.get('/', authenticate, transactionController.getAllTransactions);
+router.get('/summary', authenticate, transactionController.getSummary);
 router.get('/:transactionId', authenticate, transactionController.getTransactionById);
 router.delete('/:transactionId', authenticate, transactionController.deleteTransaction);
 router.put('/:transactionId', authenticate, transactionController.updateTransaction);

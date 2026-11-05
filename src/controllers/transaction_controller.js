@@ -96,11 +96,32 @@ const updateTransaction = async (req, res, next) => {
 const getAllTransactions = async (req, res, next) => {
     try {
         const { startDate, endDate, categoryId, type, search, limit } = req.query;
-        const categories = await transactionRepo.findAll(startDate, endDate, categoryId, type, search, limit);
+        const transactions = await transactionRepo.findAll(startDate, endDate, categoryId, type, search, limit);
 
         return res.status(200).json({
             status: 'success',
-            data: categories
+            data: transactions
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+const getSummary = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const summary = await transactionRepo.fetchSummary(startDate, endDate);
+
+        const totalIncome = summary.reduce((acc, item) => acc + Number(item.income), 0)
+        const totalExpense = summary.reduce((acc, item) => acc + Number(item.expense), 0)
+        const cashFlow = totalIncome - totalExpense
+
+        return res.status(200).json({
+            status: 'success',
+            total_income: totalIncome,
+            total_expense: totalExpense,
+            net_cashflow: cashFlow,
+            transaction_number: summary.length,
+            data: summary
         });
     } catch (error) {
         next(error);
@@ -112,5 +133,6 @@ export {
     getAllTransactions,
     getTransactionById,
     deleteTransaction,
-    updateTransaction
+    updateTransaction,
+    getSummary
 }
