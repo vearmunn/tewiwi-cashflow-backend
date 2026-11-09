@@ -1,6 +1,6 @@
 import pool from '../config/db.js';
 
-const create = async ({ description, amount, date, reminderDays, uid }) => {
+const create = async ({ description, amount, date, reminderDays, uid, isRecurring, recurringDay }) => {
     const result = await pool.query(
         `
       INSERT INTO cash_obligation (
@@ -8,26 +8,28 @@ const create = async ({ description, amount, date, reminderDays, uid }) => {
         amount,
         date,
         created_by,
-        reminder_days_before
+        reminder_days_before,
+        is_recurring,
+        recurring_day
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *
     `,
-        [description, amount, date, uid, reminderDays]
+        [description, amount, date, uid, reminderDays, isRecurring, recurringDay]
     );
 
     return result.rows[0];
 };
 
-const update = async ({ id, description, amount, date, reminderDays }) => {
+const update = async ({ id, description, amount, date, reminderDays, isRecurring, recurringDay }) => {
     const result = await pool.query(
         `
         UPDATE cash_obligation 
-        SET description = $1, amount = $2, date = $3, reminder_days_before = $4
-        WHERE id = $5
+        SET description = $1, amount = $2, date = $3, reminder_days_before = $4, is_recurring = $5, recurring_day = $6
+        WHERE id = $7
         RETURNING *
         `,
-        [description, amount, date, reminderDays, id]
+        [description, amount, date, reminderDays, isRecurring, recurringDay, id]
     );
     return result.rows[0];
 
