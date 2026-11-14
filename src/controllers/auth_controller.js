@@ -84,4 +84,25 @@ async function login(req, res) {
     }
 }
 
-export { register, login };
+const findUserById = async (req, res, next) => {
+    try {
+
+        const user = await authRepo.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'User not found',
+            });
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { register, login, findUserById };

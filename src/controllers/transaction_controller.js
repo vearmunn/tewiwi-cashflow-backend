@@ -113,7 +113,11 @@ const getSummary = async (req, res, next) => {
 
         const totalIncome = summary.reduce((acc, item) => acc + Number(item.income), 0)
         const totalExpense = summary.reduce((acc, item) => acc + Number(item.expense), 0)
-        const cashFlow = totalIncome - totalExpense
+        const cashFlow = totalIncome - totalExpense;
+
+        const sumPerCategories = await transactionRepo.fetchSumPerCategories(startDate, endDate);
+        const sumIncome = sumPerCategories.filter((item) => item.type === "income")
+        const sumExpense = sumPerCategories.filter((item) => item.type === "expense")
 
         return res.status(200).json({
             status: 'success',
@@ -121,6 +125,8 @@ const getSummary = async (req, res, next) => {
             total_expense: totalExpense,
             net_cashflow: cashFlow,
             transaction_number: summary.length,
+            sum_income: sumIncome,
+            sum_expense: sumExpense,
             data: summary
         });
     } catch (error) {

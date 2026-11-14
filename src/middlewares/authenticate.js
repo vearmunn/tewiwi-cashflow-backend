@@ -1,5 +1,6 @@
 import supabase from '../config/supabase.js';
 
+
 const authenticate = async (req, res, next) => {
     try {
 
@@ -39,5 +40,6 @@ const authenticate = async (req, res, next) => {
         });
     }
 }
+
 
 export default authenticate;

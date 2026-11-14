@@ -18,6 +18,35 @@ const create = async ({ id, email, name, role }) => {
     return result.rows[0];
 };
 
+const update = async ({ id, name, role }) => {
+    const result = await pool.query(
+        `
+        UPDATE profiles 
+        SET name = $1, role = $2
+        WHERE id = $3
+        RETURNING *
+        `,
+        [name, role, id]
+    );
+    return result.rows[0];
+
+}
+
+const findById = async (id) => {
+    const result = await pool.query(
+        `
+      SELECT *
+      FROM profiles
+      WHERE id = $1
+    `,
+        [id]
+    );
+
+    return result.rows[0];
+};
+
 export {
-    create
+    create,
+    update,
+    findById
 }

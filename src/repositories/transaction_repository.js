@@ -152,6 +152,34 @@ const fetchSummary = async (startDate, endDate) => {
     return result.rows;
 }
 
+const fetchSumPerCategories = async (startDate, endDate) => {
+    let query = `SELECT
+            c.name AS category_name,
+            c.type AS type,
+            SUM(t.amount) AS total_amount
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.id
+        WHERE 1=1`;
+
+    const values = []
+    if (startDate) {
+        values.push(startDate);
+        query += ` AND t.date >= ($${values.length}::date::timestamp AT TIME ZONE 'Asia/Jakarta')`;
+    }
+
+    if (endDate) {
+        values.push(endDate);
+        query += ` AND t.date < (($${values.length}::date + INTERVAL '1 day') AT TIME ZONE 'Asia/Jakarta')`;
+    }
+
+    query += ` GROUP BY c.id, c.name
+        ORDER BY total_amount DESC;`
+
+    const result = await pool.query(query, values);
+
+    return result.rows;
+}
+
 
 export {
     create,
@@ -159,5 +187,6 @@ export {
     remove,
     findById,
     update,
-    fetchSummary
+    fetchSummary,
+    fetchSumPerCategories
 };
