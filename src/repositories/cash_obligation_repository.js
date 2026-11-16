@@ -35,6 +35,21 @@ const update = async ({ id, description, amount, date, reminderDays, isRecurring
 
 }
 
+
+const renew = async ({ id, date, }) => {
+    const result = await pool.query(
+        `
+        UPDATE cash_obligation 
+        SET date = $1
+        WHERE id = $2
+        RETURNING *
+        `,
+        [date, id]
+    );
+    return result.rows[0];
+
+}
+
 const findById = async (id) => {
     const result = await pool.query(
         `
@@ -85,4 +100,5 @@ export {
     remove,
     findById,
     update,
+    renew
 };

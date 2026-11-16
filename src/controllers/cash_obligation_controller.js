@@ -100,6 +100,64 @@ const updateCashObligation = async (req, res, next) => {
     }
 };
 
+const renewCashObligation = async (req, res, next) => {
+    try {
+        const { cashObligationId } = req.params;
+        const existingCashObligation = await cashObligationRepo.findById(cashObligationId);
+
+        if (!existingCashObligation) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'Cash obligation doesnt exist',
+            });
+        }
+
+        const currentDate = new Date(existingCashObligation.date);
+
+        const parts = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        }).formatToParts(currentDate);
+
+        const year = Number(parts.find(p => p.type === 'year').value);
+        const month = Number(parts.find(p => p.type === 'month').value);
+        const recurringDay = existingCashObligation.recurring_day;
+
+        // Calculate next month
+        const nextMonthDate = new Date(Date.UTC(year, month, 1));
+
+        const nextYear = nextMonthDate.getUTCFullYear();
+        const nextMonth = nextMonthDate.getUTCMonth();
+
+        // Get last day of next month
+        const lastDay = new Date(
+            Date.UTC(nextYear, nextMonth + 1, 0)
+        ).getUTCDate();
+
+        const newMonthDay = Math.min(recurringDay, lastDay);
+
+        // Set deadline to midnight in Jakarta
+        const newDeadline = new Date(
+            Date.UTC(nextYear, nextMonth, newMonthDay) - 7 * 60 * 60 * 1000
+        );
+
+        const cashObligation = await cashObligationRepo.renew({
+            id: cashObligationId,
+            date: newDeadline,
+        });
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                cashObligation,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 const getCashObligations = async (req, res, next) => {
     try {
@@ -120,5 +178,6 @@ export {
     getCashObligations,
     getCashObligationById,
     deleteCashObligation,
-    updateCashObligation
+    updateCashObligation,
+    renewCashObligation
 }

@@ -11,5 +11,6 @@ router.get('/', authenticate, cashObligationController.getCashObligations);
 router.get('/:cashObligationId', authenticate, cashObligationController.getCashObligationById);
 router.delete('/:cashObligationId', authenticate, cashObligationController.deleteCashObligation);
 router.put('/:cashObligationId', authenticate, cashObligationController.updateCashObligation);
+router.put('/renew/:cashObligationId', authenticate, cashObligationController.renewCashObligation);
 
 export default router;
