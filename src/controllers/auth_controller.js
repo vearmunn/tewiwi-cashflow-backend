@@ -31,9 +31,9 @@ async function register(req, res) {
             status: 'success',
             message: 'Registration successful',
             data: {
-                accessToken: data.session.access_token,
-                refreshToken: data.session.refresh_token,
-                expiresAt: data.session.expires_at,
+                // accessToken: data.session.access_token,
+                // refreshToken: data.session.refresh_token,
+                // expiresAt: data.session.expires_at,
                 user: data.user,
             },
         });

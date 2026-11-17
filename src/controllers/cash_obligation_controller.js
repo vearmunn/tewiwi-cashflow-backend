@@ -125,20 +125,17 @@ const renewCashObligation = async (req, res, next) => {
         const month = Number(parts.find(p => p.type === 'month').value);
         const recurringDay = existingCashObligation.recurring_day;
 
-        // Calculate next month
         const nextMonthDate = new Date(Date.UTC(year, month, 1));
 
         const nextYear = nextMonthDate.getUTCFullYear();
         const nextMonth = nextMonthDate.getUTCMonth();
 
-        // Get last day of next month
         const lastDay = new Date(
             Date.UTC(nextYear, nextMonth + 1, 0)
         ).getUTCDate();
 
         const newMonthDay = Math.min(recurringDay, lastDay);
 
-        // Set deadline to midnight in Jakarta
         const newDeadline = new Date(
             Date.UTC(nextYear, nextMonth, newMonthDay) - 7 * 60 * 60 * 1000
         );

@@ -6,6 +6,8 @@ import transactionRoutes from './routes/transaction_route.js';
 import cashObligationRoutes from './routes/cash_obligation_route.js';
 import errorHandler from "./middlewares/error_handler.js";
 import authRoutes from './routes/auth_route.js'
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +22,8 @@ app.use('/categories', categoryRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/cash-obligations', cashObligationRoutes);
 app.use(errorHandler);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
