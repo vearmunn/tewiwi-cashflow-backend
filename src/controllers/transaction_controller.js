@@ -110,6 +110,7 @@ const getSummary = async (req, res, next) => {
     try {
         const { startDate, endDate } = req.query;
         const summary = await transactionRepo.fetchSummary(startDate, endDate);
+        const transactions = await transactionRepo.findAll(startDate, endDate);
 
         const totalIncome = summary.reduce((acc, item) => acc + Number(item.income), 0)
         const totalExpense = summary.reduce((acc, item) => acc + Number(item.expense), 0)
@@ -124,7 +125,7 @@ const getSummary = async (req, res, next) => {
             total_income: totalIncome,
             total_expense: totalExpense,
             net_cashflow: cashFlow,
-            transaction_number: summary.length,
+            transaction_number: transactions.length,
             sum_income: sumIncome,
             sum_expense: sumExpense,
             data: summary
