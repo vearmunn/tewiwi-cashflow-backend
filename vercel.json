@@ -2,7 +2,7 @@
     "framework": "express",
     "functions": {
         "src/app.js": {
-            "includeFiles": "certificates/**,node_modules/swagger-ui-dist/**,node_modules/swagger-ui-express/**"
+            "includeFiles": "certificates/**"
         }
     }
 }

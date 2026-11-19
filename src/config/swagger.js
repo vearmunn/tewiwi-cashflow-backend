@@ -10,6 +10,10 @@ const options = {
         },
         servers: [
             {
+                url: 'https://tewiwi-cashflow-backend.vercel.app',
+                description: 'Production server'
+            },
+            {
                 url: 'http://localhost:3000',
                 description: 'Development server'
             }
