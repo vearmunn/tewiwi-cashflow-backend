@@ -1,10 +1,12 @@
-
 {
-    "$schema": "https://openapi.vercel.sh/vercel.json",
-        "framework": "express",
-            "functions": {
+    "framework": "express",
+    "functions": {
         "src/app.js": {
-            "includeFiles": "certificates/**"
+            "includeFiles": [
+                "certificates/**",
+                "node_modules/swagger-ui-dist/**",
+                "node_modules/swagger-ui-express/**"
+            ]
         }
     }
 }
