@@ -10,7 +10,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors({
     origin: '*'
@@ -25,6 +24,4 @@ app.use(errorHandler);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+export default app;
